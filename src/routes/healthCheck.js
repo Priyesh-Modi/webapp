@@ -11,7 +11,7 @@ router.use((req, res, next) => {
 
 router.get('/', async (req, res) => {
   try {
-    if (req.body && Object.keys(req.body).length) {
+    if (req.headers['content-length'] && parseInt(req.headers['content-length'],10) > 0) {
       return res.status(400).end();
     }
 

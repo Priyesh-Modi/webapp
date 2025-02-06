@@ -1,5 +1,3 @@
-
-// Initializing sequelize
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
 
@@ -11,10 +9,8 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    // I am using MySQL dialect
     dialect: 'mysql',
-    logging: false,
+    logging: false, 
   }
 );
 

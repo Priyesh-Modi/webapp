@@ -214,3 +214,58 @@ sudo service mysql stop
 
 You have successfully set up and tested the **Health Check API**. 🚀 If you encounter issues, review the logs or check database connectivity. Happy coding!
 
+# Digital Ocean VM Setup and Usage
+
+## Step-by-Step Guide
+
+### 1. Logging into Digital Ocean VM
+To log into your Digital Ocean virtual machine (VM), use SSH:
+```sh
+ssh -i /Users/priyeshmodi/.ssh/do root@your_server_ip
+```
+If you have a different user, replace `root` with your username.
+
+If using an SSH key:
+```sh
+ssh -i /path/to/private_key.pem user@your_server_ip
+```
+
+### 2. Uploading Files to Digital Ocean VM
+Using SCP (Secure Copy Protocol):
+```sh
+scp -i ~/.ssh/do setup.sh root@your_server_ip:/root/  
+
+scp /path/to/local/file user@your_server_ip:/path/to/remote/destination
+```
+Example:
+```sh
+scp myfile.py root@your_server_ip:/home/root/
+```
+
+### 3. Running a Node.js Application
+Navigate to the application directory:
+```sh
+cd /path/to/your/node/app
+```
+Install dependencies:
+```sh
+npm install
+```
+Run the application:
+```sh
+npm start
+```
+
+### 4. Exiting the Digital Ocean VM
+To disconnect from the VM, simply type:
+```sh
+exit
+```
+
+## Additional Notes
+- Ensure your VM has a static IP or set up a Floating IP for easier access.
+- Regularly update your packages and security patches.
+- Use screen or tmux for running long scripts without interruption.
+
+This guide should help you set up and manage your Digital Ocean VM efficiently!
+

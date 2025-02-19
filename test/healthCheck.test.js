@@ -23,7 +23,7 @@ describe("Health Check API Tests", () => {
   // Test for successful health check (200 OK)
   test("GET /healthz should return 200 OK", async () => {
     const response = await request(app).get("/healthz");
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(800);
   });
 
   // Test for database failure scenario (503 Service Unavailable)

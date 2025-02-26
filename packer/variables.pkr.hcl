@@ -25,6 +25,7 @@ variable "app_port" {
 
 variable "repository_url" {
   type = string
+  default = "https://github.com/your/repository.git"
 }
 
 variable "node_version" {
@@ -60,6 +61,7 @@ variable "DB_PASSWORD" {
 variable "gcp_project_id" {
   type        = string
   description = "GCP project ID"
+  default = "webapp-dev-452003"
 }
 
 variable "gcp_zone" {

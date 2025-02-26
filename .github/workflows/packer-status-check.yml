@@ -1,0 +1,76 @@
+# name: Packer Status Check
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   format-check:
+#     name: Packer Format Check
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
+
+#       - name: Install Packer
+#         uses: hashicorp/setup-packer@v2
+
+#       - name: Run packer fmt
+#         run: |
+#           packer fmt -check .
+      
+#   validate:
+#     name: Packer Validate
+#     runs-on: ubuntu-latest
+#     needs: format-check
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4
+
+#       - name: Install Packer
+#         uses: hashicorp/setup-packer@v2
+
+#       - name: Run packer validate
+#         run: |
+#           packer init .
+#           packer validate .
+
+name: Packer Status Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  packer-fmt:
+    name: Check Packer Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@main
+
+      - name: Run Packer Format Check
+        run: |
+          packer fmt -check -diff .
+        continue-on-error: false
+
+  packer-validate:
+    name: Validate Packer Template
+    runs-on: ubuntu-latest
+    needs: packer-fmt
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@main
+
+      - name: Validate Packer Template
+        run: |
+          packer validate -var-file=variables.pkrvars.hcl .
+        continue-on-error: false

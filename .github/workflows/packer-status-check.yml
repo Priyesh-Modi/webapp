@@ -70,7 +70,12 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
+      - name: Initialize Packer (Install Plugins)
+        run: |
+          packer init ./packer
+        continue-on-error: false
+
       - name: Validate Packer Template
         run: |
-          packer validate -var-file=variables.pkrvars.hcl .
+          packer validate ./packer
         continue-on-error: false

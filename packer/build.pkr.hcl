@@ -20,10 +20,10 @@ build {
   }
 
   # Copy .env file
-  provisioner "file" {
-    source      = ".env"
-    destination = "/tmp/app/.env"
-  }
+  # provisioner "file" {
+  #   source      = ".env"
+  #   destination = "/tmp/app/.env"
+  # }
 
   # Copy csye6225.service separately
   provisioner "file" {

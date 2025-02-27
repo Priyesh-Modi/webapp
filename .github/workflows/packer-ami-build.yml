@@ -178,5 +178,3 @@ jobs:
         working-directory: ./packer
         run: |
           packer build --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
-
-

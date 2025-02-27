@@ -18,7 +18,7 @@ jobs:
 
       - name: Run Packer Format Check
         run: |
-          packer fmt -check -diff .
+          packer fmt -check -diff ./packer
         continue-on-error: false
 
   packer-validate:

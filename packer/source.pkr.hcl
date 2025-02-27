@@ -8,10 +8,6 @@ packer {
       version = ">= 0.3.0"
       source  = "github.com/hashicorp/googlecompute"
     }
-    # googlecompute = {
-    #   version = ">=1.0.0"
-    #   source  = "github.com/hashicorp/googlecompute"
-    # }
   }
 }
 
@@ -23,22 +19,6 @@ source "amazon-ebs" "ubuntu" {
   ssh_username  = var.ssh_username
   ami_name      = "${var.project_name}-ami-{{timestamp}}"
 }
-
-# source "googlecompute" "ubuntu" {
-#   project_id        = var.gcp_project_id
-#   source_image      = "ubuntu-2404-lts"
-#   # source_image      = "ubuntu-2204-jammy-v20240207"
-#   source_image_family = "ubuntu-2404-lts"
-#   machine_type      = "n1-standard-1"
-#   zone              = var.gcp_zone
-#   image_name        = "custom-ubuntu-node-mysql"
-#   image_family      = "custom-node-mysql"
-#   ssh_username    = "ubuntu"
-#   image_description = "Ubuntu 24.04 LTS custom image with Node.js and MySQL"
-#   labels = {
-#     environment = "dev"
-#   }
-# }
 
 source "googlecompute" "gcp-image" {
   project_id              = var.gcp_project_id

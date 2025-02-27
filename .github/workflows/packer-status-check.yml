@@ -98,10 +98,13 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
-      - name: Run Packer Format
+      - name: Create Dummy .env File
         run: |
-          packer fmt -check -diff .
-        continue-on-error: false
+          touch .env
+          echo "DUMMY_ENV=1" > .env
+
+      - name: Run Packer Format
+        run: packer fmt -check -diff packer/
 
   packer-validate:
     name: Validate Packer Template
@@ -114,7 +117,14 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
+      - name: Create Dummy .env File
+        run: |
+          touch .env
+          echo "DUMMY_ENV=1" > .env
+
       - name: Validate Packer Template
         run: |
-          packer init ./packer
-          packer validate ./packer
+          cd packer
+          packer init .
+          packer validate .
+

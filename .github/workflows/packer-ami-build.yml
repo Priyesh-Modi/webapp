@@ -21,7 +21,7 @@ jobs:
       - name: Set Environment Variables for Tests
         run: |
           echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
-          echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> .env
+          echo "DB_AMI_PASSWORD=\"${{ secrets.DB_AMI_PASSWORD }}\"" >> .env
           echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
           echo "ENV=\"test\"" >> .env
           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
@@ -52,7 +52,7 @@ jobs:
 
       - name: Initialize MySQL Database as Root
         run: >
-          sudo mysql -u${{secrets.DB_USER}} -p${{ secrets.DB_PASSWORD }} <<EOF
+          sudo mysql -u${{secrets.DB_USER}} -p${{ secrets.DB_AMI_PASSWORD }} <<EOF
 
           CREATE DATABASE IF NOT EXISTS \`${{secrets.DB_NAME}}\`;
 
@@ -74,7 +74,7 @@ jobs:
           echo "project_name  = \"${{ secrets.PROJECT_NAME }}\"" >> variables.pkvars.hcl
           echo "db_name          = \"${{ secrets.DB_NAME }}\"" >> variables.pkvars.hcl
           echo "db_user          = \"${{ secrets.DB_USER }}\"" >> variables.pkvars.hcl
-          echo "db_password      = \"${{ secrets.DB_PASSWORD }}\"" >> variables.pkvars.hcl
+          echo "DB_AMI_PASSWORD      = \"${{ secrets.DB_AMI_PASSWORD }}\"" >> variables.pkvars.hcl
           echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkvars.hcl
           echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkvars.hcl
           echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkvars.hcl
@@ -95,7 +95,7 @@ jobs:
           echo "ENV=\"${{ secrets.ENV }}\"" >> .env
           echo "PORT=\"${{ secrets.PORT }}\"" >> .env
           echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
-          echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> .env
+          echo "DB_AMI_PASSWORD=\"${{ secrets.DB_AMI_PASSWORD }}\"" >> .env
           echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
           echo "DB_NAME_TEST=\"${{ secrets.DB_NAME_TEST }}\"" >> .env

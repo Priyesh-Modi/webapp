@@ -1,8 +1,15 @@
-name: Packer Build
-"on":
-  pull_request:
-    types:
-      - closed
+# name: Packer Build
+# "on":
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - main
+
+name: Packer AMI Build
+
+on:
+  push:
     branches:
       - main
 
@@ -144,4 +151,3 @@ jobs:
         run: |
           packer build --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
 
-# Test build again after iam changes

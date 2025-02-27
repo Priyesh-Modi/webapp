@@ -21,7 +21,7 @@ source "amazon-ebs" "ubuntu" {
 }
 
 source "googlecompute" "gcp-image" {
-  project_id              = var.gcp_dev_project_id
+  project_id = var.gcp_dev_project_id
   # gcp_source_image        = "ubuntu-2404-noble-amd64-v20250214"
   gcp_image_user_email    = "ubuntu-2404-noble-amd64-v20250214"
   gcp_source_image_family = "ubuntu-2404-noble-amd64"

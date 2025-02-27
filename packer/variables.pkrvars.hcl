@@ -11,5 +11,5 @@ repository_url = "https://github.com/your/repository.git"
 node_version   = "20.x"
 
 gcp_dev_project_id = "webapp-dev-452003"
-gcp_zone       = "us-east1-d"
+gcp_zone           = "us-east1-d"
 

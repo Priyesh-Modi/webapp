@@ -41,4 +41,3 @@ jobs:
         run: |
           packer validate ./packer
         continue-on-error: false
-

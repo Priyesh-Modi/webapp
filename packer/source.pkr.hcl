@@ -1,4 +1,4 @@
-   packer {
+packer {
   required_plugins {
     amazon = {
       version = ">1.0.0, < 2.0.0"
@@ -9,7 +9,7 @@
       source  = "github.com/hashicorp/googlecompute"
     }
   }
-}
+}}
 
 source "amazon-ebs" "ubuntu" {
   region        = var.aws_region
@@ -18,7 +18,7 @@ source "amazon-ebs" "ubuntu" {
   source_ami    = var.source_ami
   ssh_username  = var.ssh_username
   ami_name      = "${var.project_name}-ami-{{timestamp}}"
-}
+}}
 
 source "googlecompute" "gcp-image" {
   project_id              = var.gcp_project_id
@@ -36,5 +36,5 @@ source "googlecompute" "gcp-image" {
   image_name              = "csye6225-webapp-ami"
   image_family            = "csye6225-webapp-images"
   ssh_username            = "ubuntu"
-}
+}}
 

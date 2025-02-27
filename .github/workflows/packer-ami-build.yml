@@ -170,11 +170,11 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer validate --var-file=variables.pkrvars.hcl
+          packer validate packer/
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer build --var-file=variables.pkrvars.hcl
+          packer build packer/

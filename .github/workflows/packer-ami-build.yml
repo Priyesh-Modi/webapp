@@ -34,7 +34,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm install
@@ -58,43 +58,6 @@ jobs:
           echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
           echo "ENV=\"test\"" >> .env
           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
-
-      # - name: Enable mysql service
-      #   run: sudo systemctl start mysql
-
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: "20"
-
-      # - name: Install Dependencies
-      #   run: |
-      #     npm install
-
-      # - name: Wait for MySQL to be Ready
-      #   run: |
-      #     echo "Waiting for MySQL to be ready..."
-      #     for i in {1..30}; do
-      #       if mysqladmin ping -h 127.0.0.1 --silent; then
-      #         echo "MySQL is ready!"
-      #         break
-      #       fi
-      #       echo "Waiting for MySQL..."
-      #       sleep 2
-      #     done
-
-      # - name: Initialize MySQL Database as Root
-      #   run: >
-      #     sudo mysql -u${{secrets.DB_USER}} -p${{ secrets.DB_AMI_PASSWORD }} <<EOF
-
-      #     CREATE DATABASE IF NOT EXISTS \`${{secrets.DB_NAME}}\`;
-
-      #     EOF
-
-      # - name: Run Tests
-      #   run: |
-      #     npm test
-      #     sudo rm -f .env
 
       - name: Create variables.pkvars.hcl
         working-directory: packer
@@ -170,11 +133,11 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer validate .
+          packer validate -var-file="packer/variables.pkrvars.hcl" packer/
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer build packer/
+          packer build -var-file="packer/variables.pkrvars.hcl" packer/

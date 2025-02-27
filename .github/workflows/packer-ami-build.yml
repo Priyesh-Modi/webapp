@@ -59,27 +59,27 @@ jobs:
           echo "ENV=\"test\"" >> .env
           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
 
-      - name: Create variables.pkvars.hcl
+      - name: Create variables.pkrvars.hcl
         working-directory: packer
         run: |
-          echo "aws_region       = \"${{ secrets.AWS_REGION }}\"" > variables.pkvars.hcl
-          echo "instance_type = \"${{ secrets.AWS_INSTANCE_TYPE }}\"" >> variables.pkvars.hcl
-          echo "aws_access_key   = \"${{ secrets.AWS_ACCESS_KEY_ID }}\"" >> variables.pkvars.hcl
-          echo "aws_secret_key   = \"${{ secrets.AWS_SECRET_ACCESS_KEY }}\"" >> variables.pkvars.hcl
-          echo "source_ami       = \"${{ secrets.SOURCE_AMI }}\"" >> variables.pkvars.hcl
-          echo "project_name  = \"${{ secrets.PROJECT_NAME }}\"" >> variables.pkvars.hcl
-          echo "db_name          = \"${{ secrets.DB_NAME }}\"" >> variables.pkvars.hcl
-          echo "db_user          = \"${{ secrets.DB_USER }}\"" >> variables.pkvars.hcl
-          echo "DB_AMI_PASSWORD      = \"${{ secrets.DB_AMI_PASSWORD }}\"" >> variables.pkvars.hcl
-          echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkvars.hcl
-          echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkvars.hcl
-          echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkvars.hcl
-          # echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkvars.hcl
-          echo "gcp_dev_project_id = \"${{ secrets.GCP_DEV_PROJECT_ID }}\"" >> variables.pkvars.hcl
-          # echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkvars.hcl
-          # echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkvars.hcl
-          # echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkvars.hcl
-          echo "gcp_zone = \"${{ secrets.GCP_ZONE }}\"" >> variables.pkvars.hcl
+          echo "aws_region       = \"${{ secrets.AWS_REGION }}\"" > variables.pkrvars.hcl
+          echo "instance_type = \"${{ secrets.AWS_INSTANCE_TYPE }}\"" >> variables.pkrvars.hcl
+          echo "aws_access_key   = \"${{ secrets.AWS_ACCESS_KEY_ID }}\"" >> variables.pkrvars.hcl
+          echo "aws_secret_key   = \"${{ secrets.AWS_SECRET_ACCESS_KEY }}\"" >> variables.pkrvars.hcl
+          echo "source_ami       = \"${{ secrets.SOURCE_AMI }}\"" >> variables.pkrvars.hcl
+          echo "project_name  = \"${{ secrets.PROJECT_NAME }}\"" >> variables.pkrvars.hcl
+          echo "db_name          = \"${{ secrets.DB_NAME }}\"" >> variables.pkrvars.hcl
+          echo "db_user          = \"${{ secrets.DB_USER }}\"" >> variables.pkrvars.hcl
+          echo "DB_AMI_PASSWORD      = \"${{ secrets.DB_AMI_PASSWORD }}\"" >> variables.pkrvars.hcl
+          echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkrvars.hcl
+          echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkrvars.hcl
+          echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkrvars.hcl
+          # echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkrvars.hcl
+          echo "gcp_dev_project_id = \"${{ secrets.GCP_DEV_PROJECT_ID }}\"" >> variables.pkrvars.hcl
+          # echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkrvars.hcl
+          # echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkrvars.hcl
+          # echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkrvars.hcl
+          echo "gcp_zone = \"${{ secrets.GCP_ZONE }}\"" >> variables.pkrvars.hcl
 
       - name: Set up Packer
         uses: hashicorp/setup-packer@v2
@@ -133,11 +133,11 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer validate -var-file="packer/variables.pkrvars.hcl" packer/
+          packer validate -var-file="variables.pkrvars.hcl"
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer build -var-file="packer/variables.pkrvars.hcl" packer/
+          packer build -var-file="variables.pkrvars.hcl"

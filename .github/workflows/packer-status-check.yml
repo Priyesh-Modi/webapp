@@ -1,85 +1,3 @@
-# # name: Packer Status Check
-
-# # on:
-# #   pull_request:
-# #     branches:
-# #       - main
-
-# # jobs:
-# #   format-check:
-# #     name: Packer Format Check
-# #     runs-on: ubuntu-latest
-# #     steps:
-# #       - name: Checkout Repository
-# #         uses: actions/checkout@v4
-
-# #       - name: Install Packer
-# #         uses: hashicorp/setup-packer@v2
-
-# #       - name: Run packer fmt
-# #         run: |
-# #           packer fmt -check .
-      
-# #   validate:
-# #     name: Packer Validate
-# #     runs-on: ubuntu-latest
-# #     needs: format-check
-# #     steps:
-# #       - name: Checkout Repository
-# #         uses: actions/checkout@v4
-
-# #       - name: Install Packer
-# #         uses: hashicorp/setup-packer@v2
-
-# #       - name: Run packer validate
-# #         run: |
-# #           packer init .
-# #           packer validate .
-
-# name: Packer Status Check
-
-# on:
-#   pull_request:
-#     branches:
-#       - main
-
-# jobs:
-#   packer-fmt:
-#     name: Check Packer Formatting
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Repository
-#         uses: actions/checkout@v4
-
-#       - name: Install Packer
-#         uses: hashicorp/setup-packer@main
-
-#       - name: Run Packer Format Check
-#         run: |
-#           packer fmt -check -diff .
-#         continue-on-error: false
-
-#   packer-validate:
-#     name: Validate Packer Template
-#     runs-on: ubuntu-latest
-#     needs: packer-fmt
-#     steps:
-#       - name: Checkout Repository
-#         uses: actions/checkout@v4
-
-#       - name: Install Packer
-#         uses: hashicorp/setup-packer@main
-
-#       - name: Initialize Packer (Install Plugins)
-#         run: |
-#           packer init ./packer
-#         continue-on-error: false
-
-#       - name: Validate Packer Template
-#         run: |
-#           packer validate ./packer
-#         continue-on-error: false
-
 name: Packer Status Check
 
 on:
@@ -98,13 +16,10 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
-      - name: Create Dummy .env File
+      - name: Run Packer Format Check
         run: |
-          touch .env
-          echo "DUMMY_ENV=1" > .env
-
-      - name: Run Packer Format
-        run: packer fmt -check -diff packer/
+          packer fmt -check -diff .
+        continue-on-error: false
 
   packer-validate:
     name: Validate Packer Template
@@ -117,14 +32,12 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
-      - name: Create Dummy .env File
+      - name: Initialize Packer (Install Plugins)
         run: |
-          touch .env
-          echo "DUMMY_ENV=1" > .env
+          packer init ./packer
+        continue-on-error: false
 
       - name: Validate Packer Template
         run: |
-          cd packer
-          packer init .
-          packer validate .
-
+          packer validate ./packer
+        continue-on-error: false

@@ -9,25 +9,25 @@ build {
 
   # Copy the src directory separately
   provisioner "file" {
-    source      = "./src"
+    source      = "src"
     destination = "/tmp/app/src"
   }
 
   # Copy package.json
   provisioner "file" {
-    source      = "./package.json"
+    source      = "package.json"
     destination = "/tmp/app/package.json"
   }
 
   # Copy .env file
-  # provisioner "file" {
-  #   source      = "./.env"
-  #   destination = "/tmp/app/.env"
-  # }
+  provisioner "file" {
+    source      = ".env"
+    destination = "/tmp/app/.env"
+  }
 
   # Copy csye6225.service separately
   provisioner "file" {
-    source      = "./csye6225.service"
+    source      = "csye6225.service"
     destination = "/tmp/app/csye6225.service"
   }
 

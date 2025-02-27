@@ -2,14 +2,14 @@ name: Packer Build
 
 on:
   pull_request:
-    # types:
-    #   - closed
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   build-ami:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Packer AMI Build
 
@@ -34,7 +34,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: npm install
@@ -128,16 +128,16 @@ jobs:
         id: init
         run: packer init .
 
-      # - name: Validate Packer template
-      #   env:
-      #     GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #   working-directory: ./packer
-      #   run: |
-      #     packer validate ./packer
+      - name: Validate Packer template
+        env:
+          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        working-directory: ./packer
+        run: |
+          packer validate -var-file="packer/variables.pkrvars.hcl" packer/
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer build ./packer
+          packer build -var-file="packer/variables.pkrvars.hcl" packer/

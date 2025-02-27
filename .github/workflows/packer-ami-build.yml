@@ -76,11 +76,11 @@ jobs:
           echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkvars.hcl
           echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkvars.hcl
           echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkvars.hcl
-          echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkvars.hcl
+          # echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkvars.hcl
           echo "gcp_dev_project_id = \"${{ secrets.GCP_DEV_PROJECT_ID }}\"" >> variables.pkvars.hcl
-          echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkvars.hcl
-          echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkvars.hcl
-          echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkvars.hcl
+          # echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkvars.hcl
+          # echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkvars.hcl
+          # echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkvars.hcl
           echo "gcp_zone = \"${{ secrets.GCP_ZONE }}\"" >> variables.pkvars.hcl
 
       - name: Set up Packer

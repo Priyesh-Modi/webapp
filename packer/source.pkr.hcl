@@ -12,7 +12,7 @@ packer {
 }
 
 source "amazon-ebs" "ubuntu" {
-  # region        = var.aws_region
+  region        = var.aws_region
   instance_type = var.instance_type
   ami_users     = var.ami_users
   source_ami    = var.source_ami

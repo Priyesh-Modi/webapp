@@ -69,5 +69,3 @@ variable "gcp_zone" {
   description = "GCP compute zone"
   default     = "us-east1-d"
 }
-
-

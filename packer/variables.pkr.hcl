@@ -58,7 +58,7 @@ variable "DB_PASSWORD" {
   default = "root"
 }
 
-variable "gcp_project_id" {
+variable "gcp_dev_project_id" {
   type        = string
   description = "GCP project ID"
   default     = "webapp-dev-452003"

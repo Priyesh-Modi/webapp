@@ -170,11 +170,11 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer validate --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
+          packer validate --var-file=variables.pkrvars.hcl
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer build --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
+          packer build --var-file=variables.pkrvars.hcl

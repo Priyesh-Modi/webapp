@@ -1,7 +1,7 @@
-# variable "aws_region" {
-#   type    = string
-#   default = "us-east-1"
-# }
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
+}
 
 variable "ami_users" {
   type    = list(string)
@@ -58,7 +58,7 @@ variable "DB_PASSWORD" {
   default = "root"
 }
 
-variable "gcp_project_id" {
+variable "gcp_dev_project_id" {
   type        = string
   description = "GCP project ID"
   default     = "webapp-dev-452003"

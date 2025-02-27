@@ -1,0 +1,147 @@
+name: Packer Build
+"on":
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  build-ami:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    name: Packer AMI Build
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Environment Variables for Tests
+        run: |
+          echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
+          echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> .env
+          echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
+          echo "ENV=\"test\"" >> .env
+          echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
+
+      - name: Enable mysql service
+        run: sudo systemctl start mysql
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Wait for MySQL to be Ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Initialize MySQL Database as Root
+        run: >
+          sudo mysql -u${{secrets.DB_USER}} -p${{ secrets.DB_PASSWORD }} <<EOF
+
+          CREATE DATABASE IF NOT EXISTS \`${{secrets.DB_NAME}}\`;
+
+          EOF
+
+      - name: Run Tests
+        run: |
+          npm test
+          sudo rm -f .env
+
+      - name: Create variables.pkvars.hcl
+        working-directory: packer
+        run: |
+          echo "aws_region       = \"${{ secrets.AWS_REGION }}\"" > variables.pkvars.hcl
+          echo "instance_type = \"${{ secrets.AWS_INSTANCE_TYPE }}\"" >> variables.pkvars.hcl
+          echo "aws_access_key   = \"${{ secrets.AWS_ACCESS_KEY_ID }}\"" >> variables.pkvars.hcl
+          echo "aws_secret_key   = \"${{ secrets.AWS_SECRET_ACCESS_KEY }}\"" >> variables.pkvars.hcl
+          echo "source_ami       = \"${{ secrets.SOURCE_AMI }}\"" >> variables.pkvars.hcl
+          echo "project_name  = \"${{ secrets.PROJECT_NAME }}\"" >> variables.pkvars.hcl
+          echo "db_name          = \"${{ secrets.DB_NAME }}\"" >> variables.pkvars.hcl
+          echo "db_user          = \"${{ secrets.DB_USER }}\"" >> variables.pkvars.hcl
+          echo "db_password      = \"${{ secrets.DB_PASSWORD }}\"" >> variables.pkvars.hcl
+          echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkvars.hcl
+          echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkvars.hcl
+          echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkvars.hcl
+          echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkvars.hcl
+          echo "gcp_dev_project_id = \"${{ secrets.GCP_DEV_PROJECT_ID }}\"" >> variables.pkvars.hcl
+          echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkvars.hcl
+          echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkvars.hcl
+          echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkvars.hcl
+          echo "gcp_zone = \"${{ secrets.GCP_ZONE }}\"" >> variables.pkvars.hcl
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v2
+        with:
+          version: "1.12.0"
+
+      - name: Create .env file from secrets
+        run: |
+          echo "ENV=\"${{ secrets.ENV }}\"" >> .env
+          echo "PORT=\"${{ secrets.PORT }}\"" >> .env
+          echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
+          echo "DB_PASSWORD=\"${{ secrets.DB_PASSWORD }}\"" >> .env
+          echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
+          echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
+          echo "DB_NAME_TEST=\"${{ secrets.DB_NAME_TEST }}\"" >> .env
+          echo "TABLE_NAME=\"${{ secrets.TABLE_NAME }}\"" >> .env
+          echo "GROUP_NAME=\"${{ secrets.GROUP_NAME }}\"" >> .env
+          echo "USER_NAME=\"${{ secrets.USER_NAME }}\"" >> .env
+          echo "USER_PASSWORD=\"${{ secrets.USER_PASSWORD }}\"" >> .env
+          echo "APP_DIR=\"${{ secrets.APP_DIR }}\"" >> .env
+          echo "ZIP_FILE=\"${{ secrets.ZIP_FILE }}\"" >> .env
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+          aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          aws-region: "${{ secrets.AWS_REGION }}"
+
+      - name: Configure GCP Credentials
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - name: Create webapp.zip from existing directory
+        run: |
+          sudo apt-get update -y
+          sudo npm install
+          sudo apt-get install -y unzip
+          zip -r webapp.zip .env .
+          cp -r webapp.zip packer
+        shell: bash
+
+      - name: Run packer init
+        working-directory: ./packer
+        id: init
+        run: packer init .
+
+      - name: Validate Packer template
+        env:
+          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        working-directory: ./packer
+        run: |
+          packer validate --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
+
+      - name: Build GCP AND AWS AMI
+        env:
+          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        working-directory: ./packer
+        run: |
+          packer build --var-file=variables.pkvars.hcl --var "gcp_credentials_json=$GCP_SERVICE_ACCOUNT_KEY" webapp-image.pkr.hcl
+
+# Test build again after iam changes

@@ -2,14 +2,14 @@ name: Packer Build
 
 on:
   pull_request:
-    # types:
-    #   - closed
+    types:
+      - closed
     branches:
       - main
 
 jobs:
   build-ami:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Packer AMI Build
 
@@ -59,48 +59,10 @@ jobs:
           echo "ENV=\"test\"" >> .env
           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
 
-      # - name: Create variables.pkrvars.hcl
-      #   working-directory: packer
-      #   run: |
-      #     echo "aws_region       = \"${{ secrets.AWS_REGION }}\"" > variables.pkrvars.hcl
-      #     echo "instance_type = \"${{ secrets.AWS_INSTANCE_TYPE }}\"" >> variables.pkrvars.hcl
-      #     echo "aws_access_key   = \"${{ secrets.AWS_ACCESS_KEY_ID }}\"" >> variables.pkrvars.hcl
-      #     echo "aws_secret_key   = \"${{ secrets.AWS_SECRET_ACCESS_KEY }}\"" >> variables.pkrvars.hcl
-      #     echo "source_ami       = \"${{ secrets.SOURCE_AMI }}\"" >> variables.pkrvars.hcl
-      #     echo "project_name  = \"${{ secrets.PROJECT_NAME }}\"" >> variables.pkrvars.hcl
-      #     echo "db_name          = \"${{ secrets.DB_NAME }}\"" >> variables.pkrvars.hcl
-      #     echo "db_user          = \"${{ secrets.DB_USER }}\"" >> variables.pkrvars.hcl
-      #     echo "DB_AMI_PASSWORD      = \"${{ secrets.DB_AMI_PASSWORD }}\"" >> variables.pkrvars.hcl
-      #     echo "app_port          = \"${{ secrets.APP_PORT }}\"" >> variables.pkrvars.hcl
-      #     echo "ami_users         = \"${{ secrets.DEMO_USER }}\"" >> variables.pkrvars.hcl
-      #     echo "gcp_demo_project_id = \"${{ secrets.GCP_DEMO_PROJECT_ID }}\"" >> variables.pkrvars.hcl
-      #     # echo "gcp_image_user_email = \"${{ secrets.GCP_IMAGE_USER_EMAIL }}\"" >> variables.pkrvars.hcl
-      #     echo "gcp_dev_project_id = \"${{ secrets.GCP_DEV_PROJECT_ID }}\"" >> variables.pkrvars.hcl
-      #     # echo "gcp_source_image_family = \"${{ secrets.GCP_SOURCE_IMAGE_FAMILY }}\"" >> variables.pkrvars.hcl
-      #     # echo "gcp_machine_type = \"${{ secrets.GCP_MACHINE_TYPE }}\"" >> variables.pkrvars.hcl
-      #     # echo "gcp_source_image = \"${{ secrets.GCP_SOURCE_IMAGE }}\"" >> variables.pkrvars.hcl
-      #     echo "gcp_zone = \"${{ secrets.GCP_ZONE }}\"" >> variables.pkrvars.hcl
-
       - name: Set up Packer
         uses: hashicorp/setup-packer@v2
         with:
           version: "1.12.0"
-
-      # - name: Create .env file from secrets
-      #   run: |
-      #     echo "ENV=\"${{ secrets.ENV }}\"" >> .env
-      #     echo "PORT=\"${{ secrets.PORT }}\"" >> .env
-      #     echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
-      #     echo "DB_AMI_PASSWORD=\"${{ secrets.DB_AMI_PASSWORD }}\"" >> .env
-      #     echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
-      #     echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
-      #     echo "DB_NAME_TEST=\"${{ secrets.DB_NAME_TEST }}\"" >> .env
-      #     echo "TABLE_NAME=\"${{ secrets.TABLE_NAME }}\"" >> .env
-      #     echo "GROUP_NAME=\"${{ secrets.GROUP_NAME }}\"" >> .env
-      #     echo "USER_NAME=\"${{ secrets.USER_NAME }}\"" >> .env
-      #     echo "USER_PASSWORD=\"${{ secrets.USER_PASSWORD }}\"" >> .env
-      #     echo "APP_DIR=\"${{ secrets.APP_DIR }}\"" >> .env
-      #     echo "ZIP_FILE=\"${{ secrets.ZIP_FILE }}\"" >> .env
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -117,15 +79,6 @@ jobs:
       - name: Create JSON File from Secret
         run: |
           echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
-
-      # - name: Create webapp.zip from existing directory
-      #   run: |
-      #     sudo apt-get update -y
-      #     sudo npm install
-      #     sudo apt-get install -y unzip
-      #     zip -r webapp.zip .env .
-      #     cp -r webapp.zip packer
-      #   shell: bash
 
       - name: Run packer init
         # working-directory: ./packer

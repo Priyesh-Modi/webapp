@@ -16,6 +16,10 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
+      - name: Create JSON File from Secret
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
       - name: Run Packer Format Check
         run: |
           packer fmt -check -diff ./packer

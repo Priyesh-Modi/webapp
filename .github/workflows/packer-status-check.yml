@@ -39,5 +39,5 @@ jobs:
 
       - name: Validate Packer Template
         run: |
-          packer validate ./packer
+          packer validate -var-file=packer/variables.pkrvars.hcl -var "credentials_file=secret.json" packer/
         continue-on-error: false

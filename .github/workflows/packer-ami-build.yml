@@ -144,4 +144,10 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         # working-directory: ./packer
         run: |
-          packer build -var-file=packer/variables.pkrvars.hcl -var "credentials_file=secret.json" packer/
+          packer build \
+            -var "aws_region=${{ secrets.AWS_REGION }}" \
+            -var "DB_PASSWORD=${{ secrets.DB_AMI_PASSWORD }}" \
+            -var "instance_type=t2.micro" \
+            -var "ami_users=[\"${{ secrets.AMI_USERS }}\"]" \
+            -var "credentials_file=secret.json" \
+            packer/

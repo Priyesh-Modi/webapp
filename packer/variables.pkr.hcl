@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "ami_users" {
   type    = list(string)
-  default = ["982534395308"] # Replace with actual AWS account IDs
+      default = ["982534395308"] # Replace with actual AWS account IDs
 }
 
 variable "instance_type" {

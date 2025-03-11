@@ -2,14 +2,14 @@ name: Packer Build
 
 on:
   pull_request:
-    types:
-      - closed
+    # types:
+    #   - closed
     branches:
       - main
 
 jobs:
   build-ami:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Packer AMI Build
 
@@ -124,20 +124,20 @@ jobs:
         shell: bash
 
       - name: Run packer init
-        working-directory: ./packer
+        # working-directory: ./packer
         id: init
-        run: packer init .
+        run: packer init packer/ 
 
       - name: Validate Packer template
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        working-directory: ./packer
+        # working-directory: ./packer
         run: |
-          packer validate -var-file="variables.pkrvars.hcl"
+          packer validate -var-file=packer/variables.pkrvars.hcl packer/
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        working-directory: ./packer
+        # working-directory: ./packer
         run: |
-          packer build -var-file="variables.pkrvars.hcl"
+          packer build -var-file=packer/variables.pkrvars.hcl packer/

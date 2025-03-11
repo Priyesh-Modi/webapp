@@ -46,4 +46,6 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         # working-directory: ./packer
         run: |
-          packer validate -var "credentials_file=secret.json" packer/
+          packer validate \ 
+          -var "credentials_file=secret.json" \ 
+          packer/

@@ -33,23 +33,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Packer
-        uses: hashicorp/setup-packer@main
-
       - name: Create JSON File from Secret
         run: |
           echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
+      - name: Install Packer
+        uses: hashicorp/setup-packer@main
 
       - name: Initialize Packer (Install Plugins)
         run: |
           packer init ./packer
         continue-on-error: false
 
-      - name: Validate Packer template
-        env:
-          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        # working-directory: ./packer
+      - name: Validate Packer Template
         run: |
-          packer validate \ 
-          -var "credentials_file=secret.json" \ 
-          packer/
+          packer validate -var "credentials_file=secret.json" packer/
+        continue-on-error: false

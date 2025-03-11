@@ -1,5 +1,6 @@
 build {
   sources = ["source.amazon-ebs.ubuntu", "source.googlecompute.gcp-image"]
+  # sources = ["source.googlecompute.gcp-image"]
 
   provisioner "shell" {
     inline = [

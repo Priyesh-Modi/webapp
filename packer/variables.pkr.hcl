@@ -69,3 +69,7 @@ variable "gcp_zone" {
   description = "GCP compute zone"
   default     = "us-east1-d"
 }
+
+variable "credentials_file" {
+  description = "GCP service account credentials"
+}

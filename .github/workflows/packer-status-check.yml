@@ -16,6 +16,10 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
+      - name: Create JSON File from Secret
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
       - name: Run Packer Format Check
         run: |
           packer fmt -check -diff ./packer
@@ -29,6 +33,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Create JSON File from Secret
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
@@ -39,5 +47,5 @@ jobs:
 
       - name: Validate Packer Template
         run: |
-          packer validate ./packer
+          packer validate -var "credentials_file=secret.json" packer/
         continue-on-error: false

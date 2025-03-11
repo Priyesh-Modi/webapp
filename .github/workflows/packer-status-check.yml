@@ -41,7 +41,9 @@ jobs:
           packer init ./packer
         continue-on-error: false
 
-      - name: Validate Packer Template
+      - name: Validate Packer template
+        env:
+          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        # working-directory: ./packer
         run: |
           packer validate -var "credentials_file=secret.json" packer/
-        continue-on-error: false

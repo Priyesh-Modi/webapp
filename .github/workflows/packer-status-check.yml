@@ -18,7 +18,7 @@ jobs:
 
       - name: Create JSON File from Secret
         run: |
-          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > secret.json
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
 
       - name: Run Packer Format Check
         run: |
@@ -36,6 +36,10 @@ jobs:
       - name: Install Packer
         uses: hashicorp/setup-packer@main
 
+      - name: Create JSON File from Secret
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
       - name: Initialize Packer (Install Plugins)
         run: |
           packer init ./packer
@@ -46,7 +50,6 @@ jobs:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         # working-directory: ./packer
         run: |
-          packer validate \
-          -var "credentials_file=secret.json" \
+          packer validate \ 
+          -var "credentials_file=secret.json" \ 
           packer/
-

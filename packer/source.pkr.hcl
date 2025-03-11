@@ -25,6 +25,7 @@ source "googlecompute" "gcp-image" {
   source_image = "ubuntu-2404-noble-amd64-v20250214"
   # gcp_image_user_email    = "ubuntu-2404-noble-amd64-v20250214"
   source_image_family     = "ubuntu-2404-noble-amd64"
+  credentials_file        = var.credentials_file
   zone                    = var.gcp_zone
   machine_type            = "n1-standard-1"
   disk_size               = 10

@@ -114,6 +114,10 @@ jobs:
         with:
           credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
 
+      - name: Create JSON File from Secret
+        run: |
+          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+
       # - name: Create webapp.zip from existing directory
       #   run: |
       #     sudo apt-get update -y
@@ -128,16 +132,16 @@ jobs:
         id: init
         run: packer init packer/ 
 
-      # - name: Validate Packer template
-      #   env:
-      #     GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #   # working-directory: ./packer
-      #   run: |
-      #     packer validate -var-file=packer/variables.pkrvars.hcl packer/
+      - name: Validate Packer template
+        env:
+          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        # working-directory: ./packer
+        run: |
+          packer validate -var-file=packer/variables.pkrvars.hcl packer/
 
       - name: Build GCP AND AWS AMI
         env:
           GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         # working-directory: ./packer
         run: |
-          packer build -var-file=packer/variables.pkrvars.hcl packer/
+          packer build -var-file=packer/variables.pkrvars.hcl -var "credentials_file=secret.json" packer/

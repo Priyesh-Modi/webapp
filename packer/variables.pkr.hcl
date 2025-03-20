@@ -58,18 +58,19 @@ variable "DB_PASSWORD" {
   default = "root"
 }
 
-variable "gcp_dev_project_id" {
-  type        = string
-  description = "GCP project ID"
-  default     = "webapp-dev-452003"
-}
+# variable "gcp_dev_project_id" {
+#   type        = string
+#   description = "GCP project ID"
+#   default     = "webapp-dev-452003"
+# }
 
-variable "gcp_zone" {
-  type        = string
-  description = "GCP compute zone"
-  default     = "us-east1-d"
-}
+# variable "gcp_zone" {
+#   type        = string
+#   description = "GCP compute zone"
+#   default     = "us-east1-d"
+# }
 
-variable "credentials_file" {
-  description = "GCP service account credentials"
-}
+# variable "credentials_file" {
+#   description = "GCP service account credentials"
+# }
+

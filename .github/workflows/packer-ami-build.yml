@@ -71,36 +71,54 @@ jobs:
           aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           aws-region: "${{ secrets.AWS_REGION }}"
 
-      - name: Configure GCP Credentials
-        uses: "google-github-actions/auth@v2"
-        with:
-          credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+      # - name: Configure GCP Credentials
+      #   uses: "google-github-actions/auth@v2"
+      #   with:
+      #     credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
 
-      - name: Create JSON File from Secret
-        run: |
-          echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
+      # - name: Create JSON File from Secret
+      #   run: |
+      #     echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
 
       - name: Run packer init
         # working-directory: ./packer
         id: init
-        run: packer init packer/ 
+        run: packer init packer/
+
+      # - name: Validate Packer template
+      #   env:
+      #     GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      #   working-directory: ./packer
+      #   run: |
+      #     packer validate -var "credentials_file=secret.json" packer/
 
       - name: Validate Packer template
-        env:
-          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        # working-directory: ./packer
+        # env:
+        #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        working-directory: ./packer
         run: |
-          packer validate -var "credentials_file=secret.json" packer/
+          packer validate packer/
+
+      # - name: Build GCP AND AWS AMI
+      #   # env:
+      #   #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      #   # working-directory: ./packer
+      #   run: |
+      #     packer build \
+      #       -var "aws_region=${{ secrets.AWS_REGION }}" \
+      #       -var "DB_PASSWORD=${{ secrets.DB_AMI_PASSWORD }}" \
+      #       -var "instance_type=t2.micro" \
+      #       -var "ami_users=[\"${{ secrets.AMI_USERS }}\"]" \
+      #       -var "credentials_file=secret.json" \
+      #       packer/
 
       - name: Build GCP AND AWS AMI
-        env:
-          GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        # env:
+        #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         # working-directory: ./packer
         run: |
           packer build \
             -var "aws_region=${{ secrets.AWS_REGION }}" \
-            -var "DB_PASSWORD=${{ secrets.DB_AMI_PASSWORD }}" \
             -var "instance_type=t2.micro" \
             -var "ami_users=[\"${{ secrets.AMI_USERS }}\"]" \
-            -var "credentials_file=secret.json" \
             packer/

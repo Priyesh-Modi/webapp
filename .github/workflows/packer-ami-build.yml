@@ -97,7 +97,7 @@ jobs:
         #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         working-directory: ./packer
         run: |
-          packer validate -var-file=packer/variables.pkrvars.hcl packer/
+          packer validate packer/
 
       # - name: Build GCP AND AWS AMI
       #   # env:

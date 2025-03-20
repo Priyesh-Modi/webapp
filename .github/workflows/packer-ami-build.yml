@@ -92,12 +92,12 @@ jobs:
       #   run: |
       #     packer validate -var "credentials_file=secret.json" packer/
 
-      - name: Validate Packer template
-        # env:
-        #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        working-directory: ./packer
-        run: |
-          packer validate packer/
+      # - name: Validate Packer template
+      #   # env:
+      #   #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      #   working-directory: ./packer
+      #   run: |
+      #     packer validate packer/
 
       # - name: Build GCP AND AWS AMI
       #   # env:

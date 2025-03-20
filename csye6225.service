@@ -1,7 +1,7 @@
 [Unit]
 Description=CSYE 6225 App
 After=network.target
-Requires=mysql.service
+
 
 [Service]
 Type=simple

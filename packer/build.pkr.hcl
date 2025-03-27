@@ -111,10 +111,21 @@ build {
     destination = "/tmp/app/csye6225.service"
   }
 
+  provisioner "file" {
+    source      = "./src/cloudwatchconfig.json"
+    destination = "/tmp/cloudwatchconfig.json"
+  }
+
   provisioner "shell" {
     inline = [
       "sudo apt-get update",
       "sudo apt-get install -y nodejs npm",
+
+      "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb",
+      "[ -f /tmp/amazon-cloudwatch-agent.deb ] || { echo 'Failed to download CloudWatch Agent'; exit 1; }",
+      "sudo dpkg -i /tmp/amazon-cloudwatch-agent.deb || sudo apt-get install -f -y",
+      "sudo systemctl enable amazon-cloudwatch-agent",
+
       "sudo useradd -r -s /usr/sbin/nologin csye6225 || true",
       "getent group csye6225 || sudo groupadd csye6225",
       "sudo usermod -a -G csye6225 csye6225",
@@ -141,7 +152,11 @@ build {
       # Ensure service setup
       "sudo cp /opt/csye6225/app/csye6225.service /etc/systemd/system/csye6225.service",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable csye6225.service"
+      "sudo systemctl enable csye6225.service",
+
+      "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
+      "sudo mv /tmp/cloudwatchconfig.json /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
+      "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json || { echo 'Failed to configure CloudWatch Agent'; exit 1; }"
     ]
   }
 }

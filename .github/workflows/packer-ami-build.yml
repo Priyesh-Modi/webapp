@@ -71,51 +71,12 @@ jobs:
           aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
           aws-region: "${{ secrets.AWS_REGION }}"
 
-      # - name: Configure GCP Credentials
-      #   uses: "google-github-actions/auth@v2"
-      #   with:
-      #     credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
-
-      # - name: Create JSON File from Secret
-      #   run: |
-      #     echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | jq '.' > secret.json
-
       - name: Run packer init
         # working-directory: ./packer
         id: init
         run: packer init packer/
 
-      # - name: Validate Packer template
-      #   env:
-      #     GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #   working-directory: ./packer
-      #   run: |
-      #     packer validate -var "credentials_file=secret.json" packer/
-
-      # - name: Validate Packer template
-      #   # env:
-      #   #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #   working-directory: ./packer
-      #   run: |
-      #     packer validate packer/
-
-      # - name: Build GCP AND AWS AMI
-      #   # env:
-      #   #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      #   # working-directory: ./packer
-      #   run: |
-      #     packer build \
-      #       -var "aws_region=${{ secrets.AWS_REGION }}" \
-      #       -var "DB_PASSWORD=${{ secrets.DB_AMI_PASSWORD }}" \
-      #       -var "instance_type=t2.micro" \
-      #       -var "ami_users=[\"${{ secrets.AMI_USERS }}\"]" \
-      #       -var "credentials_file=secret.json" \
-      #       packer/
-
       - name: Build AWS AMI
-        # env:
-        #   GCP_CREDENTIALS_FILE: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        # working-directory: ./packer
         run: |
           packer build \
             -var "aws_region=${{ secrets.AWS_REGION }}" \
@@ -153,21 +114,21 @@ jobs:
       - name: Create Launch Template Version with Latest AMI
         run: |
           aws ec2 create-launch-template-version \
-            --launch-template-id lt-0ec331fe9dc88e4d9 \
+            --launch-template-id ${{ secrets.LAUNCH_TEMPLATE_ID }} \
             --source-version 1 \
             --launch-template-data "{\"ImageId\":\"${{ steps.get_ami.outputs.ami_id }}\"}"
 
       - name: Start Instance Refresh
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name csye6225_asg \
+            --auto-scaling-group-name ${{ secrets.AUTO_SCALING_GROUP }} \
             --strategy Rolling
 
       - name: Wait for Refresh to Complete
         run: |
           for i in {1..60}; do
             STATUS=$(aws autoscaling describe-instance-refreshes \
-              --auto-scaling-group-name csye6225_asg \
+              --auto-scaling-group-name ${{ secrets.AUTO_SCALING_GROUP }} \
               --query 'InstanceRefreshes[0].Status' --output text)
             echo "Refresh Status: $STATUS"
             if [ "$STATUS" == "Successful" ]; then
@@ -181,142 +142,3 @@ jobs:
           done
           echo "Refresh timeout"
           exit 1
-
-
-# code - 2
-
-# name: Packer Build and Deploy to Demo
-
-# on:
-#   pull_request:
-#     types:
-#       - closed
-#     branches:
-#       - main
-
-# jobs:
-#   build-ami-and-deploy:
-#     if: github.event.pull_request.merged == true
-#     runs-on: ubuntu-latest
-#     name: Build AMI and Deploy to Demo
-
-#     services:
-#       mysql:
-#         image: mysql:8.0
-#         env:
-#           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-#           MYSQL_DATABASE: ${{ secrets.DB_NAME }}
-#         ports:
-#           - 3306:3306
-#         options: >-
-#           --health-cmd="mysqladmin ping --silent"
-#           --health-interval=10s
-#           --health-timeout=5s
-#           --health-retries=3
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: "18"
-
-#       - name: Install dependencies
-#         run: npm install
-
-#       - name: Run unit tests
-#         env:
-#           DB_HOST: 127.0.0.1
-#           DB_PORT: 3306
-#           DB_USER: ${{ secrets.DB_USER }}
-#           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-#           DB_NAME: ${{ secrets.DB_NAME }}
-#         run: npm test
-
-      
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Set Environment Variables for Tests
-#         run: |
-#           echo "DB_USER=\"${{ secrets.DB_USER }}\"" >> .env
-#           echo "DB_AMI_PASSWORD=\"${{ secrets.DB_AMI_PASSWORD }}\"" >> .env
-#           echo "DB_HOST=\"${{ secrets.DB_HOST }}\"" >> .env
-#           echo "ENV=\"test\"" >> .env
-#           echo "DB_NAME=\"${{ secrets.DB_NAME }}\"" >> .env
-
-#       - name: Set up Packer
-#         uses: hashicorp/setup-packer@v2
-#         with:
-#           version: "1.12.0"
-
-#       - name: Configure AWS credentials for DEV
-#         uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           aws-access-key-id: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-#           aws-secret-access-key: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-#           aws-region: "${{ secrets.AWS_REGION }}"
-
-#       - name: Initialize Packer
-#         id: init
-#         run: packer init packer/
-
-#       - name: Validate Packer template
-#         run: packer validate packer/
-
-#       - name: Build AMI in DEV account
-#         id: build
-#         run: |
-#           AMI_ID=$(packer build -machine-readable -var "aws_region=${{ secrets.AWS_REGION }}" \
-#             -var "instance_type=t2.micro" \
-#             -var "ami_users=[\"${{ secrets.AMI_USERS }}\"]" \
-#             -var "DB_PASSWORD=${{ secrets.DB_AMI_PASSWORD }}" \
-#             -only=amazon-ebs packer/ | grep 'artifact,0,id' | cut -d, -f6 | cut -d: -f2)
-#           echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
-
-#       - name: Share AMI with DEMO account
-#         run: |
-#           aws ec2 modify-image-attribute \
-#             --image-id $AMI_ID \
-#             --launch-permission "Add=[{\"UserId\":\"${{ secrets.DEMO_ACCOUNT_ID }}\"}]"
-
-#       - name: Reconfigure AWS CLI to use DEMO account
-#         uses: aws-actions/configure-aws-credentials@v2
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}
-#           aws-region: ${{ secrets.AWS_REGION_DEMO }}
-
-#       - name: Create new Launch Template version
-#         run: |
-#           aws ec2 create-launch-template-version \
-#             --launch-template-id "csye6225_asg" \
-#             --source-version 1 \
-#             --launch-template-data '{"ImageId":"'$AMI_ID'"}'
-
-#       - name: Start Instance Refresh in Auto Scaling Group
-#         id: refresh
-#         run: |
-#           REFRESH_ID=$(aws autoscaling start-instance-refresh \
-#             --auto-scaling-group-name csye6225_asg \
-#             --region ${{ secrets.AWS_REGION_DEMO }} \
-#             --query 'InstanceRefreshId' --output text)
-#           echo "REFRESH_ID=$REFRESH_ID" >> $GITHUB_ENV
-
-#       - name: Wait for Instance Refresh to complete
-#         run: |
-#           STATUS="InProgress"
-#           while [ "$STATUS" = "InProgress" ]; do
-#             sleep 30
-#             STATUS=$(aws autoscaling describe-instance-refreshes \
-#               --auto-scaling-group-name csye6225_asg \
-#               --region ${{ secrets.AWS_REGION_DEMO }} \
-#               --query 'InstanceRefreshes[0].Status' --output text)
-#             echo "Current Refresh Status: $STATUS"
-#           done
-#           if [ "$STATUS" != "Successful" ]; then
-#             echo "Instance refresh failed with status: $STATUS"
-#             exit 1
-#           fi

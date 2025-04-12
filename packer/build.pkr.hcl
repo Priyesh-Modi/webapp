@@ -33,7 +33,17 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo apt-get update",
+      "sudo apt-get update -y",
+      "sudo apt-get install -y unzip jq",
+
+      "if ! command -v aws &> /dev/null; then",
+      "  curl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"",
+      "  unzip awscliv2.zip",
+      "  sudo ./aws/install",
+      "  rm -rf awscliv2.zip aws",
+      "fi",
+      "aws --version",
+
       "sudo apt-get install -y nodejs npm",
 
       "wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb -O /tmp/amazon-cloudwatch-agent.deb",

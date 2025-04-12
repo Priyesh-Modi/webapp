@@ -1,5 +1,6 @@
 const express = require('express');
 const healthCheckRouter = require('./routes/healthCheck');
+const cicdRoute = require('./routes/cicdRouteEndpoint'); // Import the cicdRoute
 const fileRoutes = require('./routes/files'); // Import file API routes
 
 const app = express();
@@ -32,6 +33,8 @@ app.use(express.json());
 
 // Health check route
 app.use('/healthz', healthCheckRouter);
+
+app.use('/cicd', cicdRoute);
 
 // File API routes
 app.use('/v1', fileRoutes);

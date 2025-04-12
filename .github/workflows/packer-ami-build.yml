@@ -167,7 +167,7 @@ jobs:
         run: |
           for i in {1..45}; do
             STATUS=$(aws autoscaling describe-instance-refreshes \
-              --auto-scaling-group-name app-asg \
+              --auto-scaling-group-name csye6225_asg \
               --query 'InstanceRefreshes[0].Status' --output text)
             echo "Refresh Status: $STATUS"
             if [ "$STATUS" == "Successful" ]; then

@@ -160,7 +160,7 @@ jobs:
       - name: Start Instance Refresh
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name app-asg \
+            --auto-scaling-group-name csye6225_asg \
             --strategy Rolling
 
       - name: Wait for Refresh to Complete
